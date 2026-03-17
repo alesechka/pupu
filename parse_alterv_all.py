@@ -1,0 +1,185 @@
+"""
+Парсер всего каталога виброизоляторов с alterv.ru
+Собирает ВСЕ уникальные заголовки со всех товаров, потом пишет единый CSV.
+"""
+
+import csv
+import time
+from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
+
+CATALOG_URL = "https://alterv.ru/catalog/vibroizolyatory/"
+OUT_FILE = "alterv_all.csv"
+
+FIXED_COLS = ["Категория", "URL товара"]
+
+
+def get_product_links(page):
+    print(f"Загружаю каталог: {CATALOG_URL}")
+    page.goto(CATALOG_URL, wait_until="networkidle", timeout=60000)
+    try:
+        page.wait_for_selector(".catalog_item_wrapp", timeout=15000)
+    except Exception:
+        pass
+
+    soup = BeautifulSoup(page.content(), "html.parser")
+    links = []
+    seen = set()
+    for item in soup.select(".catalog_item_wrapp .item-title a"):
+        href = item.get("href", "")
+        if href and href not in seen:
+            seen.add(href)
+            full_url = "https://alterv.ru" + href if href.startswith("/") else href
+            links.append((item.get_text(strip=True), full_url))
+
+    print(f"Найдено товаров: {len(links)}")
+    return links
+
+
+def get_table_headers(html: str) -> list:
+    """Возвращает список заголовков таблицы на странице."""
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find("table", class_="flt-table")
+    if not table:
+        return []
+    thead = table.find("thead")
+    if not thead:
+        return []
+    headers = []
+    for th in thead.find_all("th"):
+        title_span = th.find("span", class_="flt-table__title")
+        name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
+        if name and name != "Заказать":
+            headers.append(name)
+    return headers
+
+
+def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> list:
+    """Парсит строки таблицы, маппит по заголовкам в общий список колонок."""
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find("table", class_="flt-table")
+    if not table:
+        return []
+
+    # Строим маппинг: имя колонки -> индекс td в этой таблице
+    thead = table.find("thead")
+    local_cols = []
+    if thead:
+        for th in thead.find_all("th"):
+            title_span = th.find("span", class_="flt-table__title")
+            name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
+            local_cols.append(name)
+
+    col_index = {name: i for i, name in enumerate(local_cols)}
+
+    tbody = table.find("tbody")
+    rows = []
+
+    for tr in (tbody or table).find_all("tr", class_="table_row"):
+        cells = tr.find_all("td")
+        if not cells:
+            continue
+
+        def get_cell(idx):
+            if idx < 0 or idx >= len(cells):
+                return ""
+            td = cells[idx]
+
+            nal_cell = td.find("span", class_="nal_cell")
+            if nal_cell:
+                p1 = nal_cell.find("span", class_="p1")
+                if p1:
+                    return p1.get_text(strip=True)
+                btn = nal_cell.find("button")
+                return btn.get_text(strip=True) if btn else nal_cell.get_text(strip=True)
+
+            price_div = td.find("div", class_="table_price")
+            if price_div:
+                price_val = price_div.get("price", "")
+                return price_val.replace(".", ",") if price_val else ""
+
+            span = td.find("span")
+            return span.get_text(strip=True) if span else td.get_text(strip=True)
+
+        row = [category, url]
+        for col_name in all_cols:
+            idx = col_index.get(col_name, -1)
+            row.append(get_cell(idx))
+
+        rows.append(row)
+
+    return rows
+
+
+def main():
+    # Кэшируем HTML каждой страницы чтобы не грузить дважды
+    page_cache = {}
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        product_links = get_product_links(page)
+        if not product_links:
+            print("Товары не найдены!")
+            browser.close()
+            return
+
+        # Проход 1: собираем все уникальные заголовки
+        print("\n--- Проход 1: сбор заголовков ---")
+        all_cols_ordered = []
+        seen_cols = set()
+
+        for i, (title, url) in enumerate(product_links, 1):
+            print(f"[{i}/{len(product_links)}] {title}")
+            try:
+                page.goto(url, wait_until="networkidle", timeout=60000)
+                try:
+                    page.wait_for_selector("tr.table_row", timeout=15000)
+                except Exception:
+                    pass
+                html = page.content()
+                page_cache[url] = (title, html)
+
+                for h in get_table_headers(html):
+                    if h not in seen_cols:
+                        seen_cols.add(h)
+                        all_cols_ordered.append(h)
+                        print(f"  + новая колонка: {h}")
+
+            except Exception as e:
+                print(f"  ОШИБКА: {e}")
+                page_cache[url] = (title, "")
+
+            time.sleep(0.3)
+
+        print(f"\nВсего уникальных колонок: {len(all_cols_ordered)}")
+        print(f"Колонки: {all_cols_ordered}")
+
+        browser.close()
+
+    # Проход 2: парсим строки используя кэш
+    print("\n--- Проход 2: парсинг данных ---")
+    all_rows = []
+
+    for url, (title, html) in page_cache.items():
+        if not html:
+            continue
+        rows = parse_product_rows(html, title, url, all_cols_ordered)
+        print(f"  {title}: {len(rows)} строк")
+        all_rows.extend(rows)
+
+    print(f"\nВсего строк: {len(all_rows)}")
+
+    final_headers = FIXED_COLS + all_cols_ordered
+    with open(OUT_FILE, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f, delimiter=";")
+        writer.writerow(final_headers)
+        writer.writerows(all_rows)
+
+    print(f"Сохранено в: {OUT_FILE}")
+    print("Открывай в Excel — разделитель точка с запятой (;)")
+
+
+if __name__ == "__main__":
+    main()
