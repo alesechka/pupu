@@ -11,7 +11,8 @@ from playwright.sync_api import sync_playwright
 CATALOG_URL = "https://alterv.ru/catalog/vibroizolyatory/"
 OUT_FILE = "alterv_all.csv"
 
-FIXED_COLS = ["Категория", "URL товара"]
+FIXED_COLS = ["Категория", "URL товара", "Фото основные", "Фото дополнительные"]
+BASE_URL = "https://alterv.ru"
 
 
 def get_product_links(page):
@@ -34,6 +35,26 @@ def get_product_links(page):
 
     print(f"Найдено товаров: {len(links)}")
     return links
+
+
+def get_images(html: str) -> tuple[str, str]:
+    """Возвращает (основные_через_запятую, дополнительные_через_запятую)."""
+    soup = BeautifulSoup(html, "html.parser")
+    main_imgs = []
+    extra_imgs = []
+    seen = set()
+    for a in soup.select("a[data-fancybox-group]"):
+        href = a.get("href", "")
+        if not href or href in seen:
+            continue
+        seen.add(href)
+        full = BASE_URL + href if href.startswith("/") else href
+        group = a.get("data-fancybox-group", "")
+        if group == "item_slider":
+            main_imgs.append(full)
+        elif group == "drawings":
+            extra_imgs.append(full)
+    return ", ".join(main_imgs), ", ".join(extra_imgs)
 
 
 def get_table_headers(html: str) -> list:
@@ -60,6 +81,8 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
     table = soup.find("table", class_="flt-table")
     if not table:
         return []
+
+    main_imgs, extra_imgs = get_images(html)
 
     # Строим маппинг: имя колонки -> индекс td в этой таблице
     thead = table.find("thead")
@@ -101,7 +124,7 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
             span = td.find("span")
             return span.get_text(strip=True) if span else td.get_text(strip=True)
 
-        row = [category, url]
+        row = [category, url, main_imgs, extra_imgs]
         for col_name in all_cols:
             idx = col_index.get(col_name, -1)
             row.append(get_cell(idx))
