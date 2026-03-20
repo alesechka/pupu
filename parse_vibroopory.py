@@ -87,75 +87,79 @@ def get_images(html: str) -> tuple[str, str]:
 
 
 def get_table_headers(html: str) -> list:
+    """Возвращает список заголовков со ВСЕХ таблиц flt-table на странице."""
     soup = BeautifulSoup(html, "html.parser")
-    table = soup.find("table", class_="flt-table")
-    if not table:
-        return []
-    thead = table.find("thead")
-    if not thead:
-        return []
+    tables = soup.find_all("table", class_="flt-table")
     headers = []
-    for th in thead.find_all("th"):
-        title_span = th.find("span", class_="flt-table__title")
-        name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
-        if name and name != "Заказать":
-            headers.append(name)
+    seen = set()
+    for table in tables:
+        thead = table.find("thead")
+        if not thead:
+            continue
+        for th in thead.find_all("th"):
+            title_span = th.find("span", class_="flt-table__title")
+            name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
+            if name and name != "Заказать" and name not in seen:
+                seen.add(name)
+                headers.append(name)
     return headers
 
 
 def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> list:
+    """Парсит строки всех таблиц flt-table, маппит по заголовкам в общий список колонок."""
     soup = BeautifulSoup(html, "html.parser")
-    table = soup.find("table", class_="flt-table")
-    if not table:
+    tables = soup.find_all("table", class_="flt-table")
+    if not tables:
         return []
 
     main_imgs, extra_imgs = get_images(html)
-
-    thead = table.find("thead")
-    local_cols = []
-    if thead:
-        for th in thead.find_all("th"):
-            title_span = th.find("span", class_="flt-table__title")
-            name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
-            local_cols.append(name)
-
-    col_index = {name: i for i, name in enumerate(local_cols)}
-
-    tbody = table.find("tbody")
     rows = []
 
-    for tr in (tbody or table).find_all("tr", class_="table_row"):
-        cells = tr.find_all("td")
-        if not cells:
-            continue
+    for table in tables:
+        thead = table.find("thead")
+        local_cols = []
+        if thead:
+            for th in thead.find_all("th"):
+                title_span = th.find("span", class_="flt-table__title")
+                name = title_span.get_text(strip=True) if title_span else th.get_text(strip=True)
+                local_cols.append(name)
 
-        def get_cell(idx):
-            if idx < 0 or idx >= len(cells):
-                return ""
-            td = cells[idx]
+        col_index = {name: i for i, name in enumerate(local_cols)}
 
-            nal_cell = td.find("span", class_="nal_cell")
-            if nal_cell:
-                p1 = nal_cell.find("span", class_="p1")
-                if p1:
-                    return p1.get_text(strip=True)
-                btn = nal_cell.find("button")
-                return btn.get_text(strip=True) if btn else nal_cell.get_text(strip=True)
+        tbody = table.find("tbody")
 
-            price_div = td.find("div", class_="table_price")
-            if price_div:
-                price_val = price_div.get("price", "")
-                return price_val.replace(".", ",") if price_val else ""
+        for tr in (tbody or table).find_all("tr", class_="table_row"):
+            cells = tr.find_all("td")
+            if not cells:
+                continue
 
-            span = td.find("span")
-            return span.get_text(strip=True) if span else td.get_text(strip=True)
+            def get_cell(idx):
+                if idx < 0 or idx >= len(cells):
+                    return ""
+                td = cells[idx]
 
-        row = [category, url, main_imgs, extra_imgs]
-        for col_name in all_cols:
-            idx = col_index.get(col_name, -1)
-            row.append(get_cell(idx))
+                nal_cell = td.find("span", class_="nal_cell")
+                if nal_cell:
+                    p1 = nal_cell.find("span", class_="p1")
+                    if p1:
+                        return p1.get_text(strip=True)
+                    btn = nal_cell.find("button")
+                    return btn.get_text(strip=True) if btn else nal_cell.get_text(strip=True)
 
-        rows.append(row)
+                price_div = td.find("div", class_="table_price")
+                if price_div:
+                    price_val = price_div.get("price", "")
+                    return price_val.replace(".", ",") if price_val else ""
+
+                span = td.find("span")
+                return span.get_text(strip=True) if span else td.get_text(strip=True)
+
+            row = [category, url, main_imgs, extra_imgs]
+            for col_name in all_cols:
+                idx = col_index.get(col_name, -1)
+                row.append(get_cell(idx))
+
+            rows.append(row)
 
     return rows
 
