@@ -81,31 +81,48 @@ def get_file_code(filename: str) -> str:
 def build_screenshot_index() -> dict[str, list[Path]]:
     """
     Строит индекс: нормализованный_код -> список Path скринов.
-    Нормализация имени файла: берём всё до первого '_' (или до '_table').
-    Также включает части из подпапок (_part_N).
+    Использует prefix-матчинг: файл 'k0518k0519_...' попадёт под код 'k0518'.
     """
-    index: dict[str, list[Path]] = {}
+    # Сначала собираем все файлы с их полными кодами
+    all_files: list[tuple[str, Path]] = []
 
     for dir_name in SCREENSHOT_DIRS:
         d = Path(dir_name)
         if not d.exists():
             continue
-
-        # Файлы в корне папки
         for f in sorted(d.glob("*.png")):
             code = get_file_code(f.name)
             if code:
-                index.setdefault(code, []).append(f)
-
-        # Файлы в подпапках (нарезанные части)
+                all_files.append((code, f))
         for sub in sorted(d.iterdir()):
             if sub.is_dir():
                 for f in sorted(sub.glob("*.png")):
                     code = get_file_code(f.name)
                     if code:
-                        index.setdefault(code, []).append(f)
+                        all_files.append((code, f))
+
+    # Строим индекс по полному коду
+    index: dict[str, list[Path]] = {}
+    for code, f in all_files:
+        index.setdefault(code, []).append(f)
 
     return index
+
+
+def find_screenshots(code: str, index: dict[str, list[Path]]) -> list[Path]:
+    """
+    Ищет скрины для кода с prefix-матчингом.
+    'k0518' найдёт файлы с кодом 'k0518', 'k0518k0519' и т.д.
+    """
+    results = []
+    seen_names = set()
+    for file_code, files in index.items():
+        if file_code == code or file_code.startswith(code):
+            for f in files:
+                if f.name not in seen_names:
+                    seen_names.add(f.name)
+                    results.append(f)
+    return sorted(results, key=lambda f: f.name)
 
 
 def get_img_width(path: Path) -> int:
@@ -118,18 +135,10 @@ def get_img_width(path: Path) -> int:
 
 def build_description(url: str, prim_html: str, index: dict[str, list[Path]]) -> str:
     code = get_product_code(url)
-    screenshots = index.get(code, [])
-
-    # Убираем дубли (один и тот же файл мог попасть из разных папок)
-    seen_names = set()
-    unique = []
-    for f in screenshots:
-        if f.name not in seen_names:
-            seen_names.add(f.name)
-            unique.append(f)
+    screenshots = find_screenshots(code, index)
 
     html_parts = []
-    for f in unique:
+    for f in screenshots:
         width = get_img_width(f)
         img_url = IMG_BASE_URL + f.name
         html_parts.append(f'<p><img src="{img_url}" style="width: {width}px;"></p>')
