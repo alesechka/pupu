@@ -13,6 +13,60 @@ FIXED_COLS = ["Категория", "URL товара", "Фото основны
 BASE_URL = "https://alterv.ru"
 
 
+def _hide_popup(page):
+    try:
+        page.evaluate("""
+            ['altasib_geobase_window','altasib_geobase_window_block'].forEach(id => {
+                var el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+        """)
+    except Exception:
+        pass
+
+
+def _click_show_more(page):
+    while True:
+        prev = len(page.query_selector_all(".catalog_item_wrapp"))
+        btn = page.query_selector(".ajax_load_btn")
+        if not btn or not btn.is_visible():
+            appeared = False
+            for _ in range(10):
+                time.sleep(0.5)
+                btn = page.query_selector(".ajax_load_btn")
+                if btn and btn.is_visible():
+                    appeared = True
+                    break
+            if not appeared:
+                break
+        page.evaluate("document.querySelector('.ajax_load_btn').click()")
+        for _ in range(30):
+            time.sleep(0.5)
+            if len(page.query_selector_all(".catalog_item_wrapp")) > prev:
+                break
+        _hide_popup(page)
+
+
+def _get_pagination_urls(page) -> list:
+    soup = BeautifulSoup(page.content(), "html.parser")
+    seen, urls = set(), []
+    for a in soup.select(".module-pagination .nums a.dark_link"):
+        href = a.get("href", "")
+        if href and href not in seen:
+            seen.add(href)
+            urls.append(BASE_URL + href if href.startswith("/") else href)
+    return urls
+
+
+def _collect_links(page, seen: set, links: list):
+    soup = BeautifulSoup(page.content(), "html.parser")
+    for item in soup.select(".catalog_item_wrapp .item-title a"):
+        href = item.get("href", "")
+        if href and href not in seen:
+            seen.add(href)
+            full_url = BASE_URL + href if href.startswith("/") else href
+            links.append((item.get_text(strip=True), full_url))
+
+
 def get_product_links(page):
     print(f"Загружаю каталог: {CATALOG_URL}")
     page.goto(CATALOG_URL, wait_until="networkidle", timeout=60000)

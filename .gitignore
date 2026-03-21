@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 debug_parse.py
+table_screenshots/
+table_screenshots_clean/
+table_screenshots_no_favorites/
+table_screenshots_zamki/

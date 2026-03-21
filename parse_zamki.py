@@ -1,6 +1,7 @@
 """
-Парсер всего каталога виброизоляторов с alterv.ru
-Собирает ВСЕ уникальные заголовки со всех товаров, потом пишет единый CSV.
+Парсер каталога замков поворотных с alterv.ru/catalog/zamki_povorotnye/
+Эмулирует клики "Показать еще" до полной загрузки, затем парсит все товары.
+Поддерживает несколько таблиц flt-table на одной странице товара.
 """
 
 import csv
@@ -8,9 +9,8 @@ import time
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-CATALOG_URL = "https://alterv.ru/catalog/vibroizolyatory/"
-OUT_FILE = "alterv_all.csv"
-
+CATALOG_URL = "https://alterv.ru/catalog/zamki_povorotnye/"
+OUT_FILE = "alterv_zamki.csv"
 FIXED_COLS = ["Категория", "URL товара", "Фото основные", "Фото дополнительные"]
 BASE_URL = "https://alterv.ru"
 
@@ -27,13 +27,16 @@ def _hide_popup(page):
 
 
 def _click_show_more(page):
+    """Кликает 'Показать ещё' пока кнопка есть на текущей странице."""
+    click_count = 0
     while True:
-        prev = len(page.query_selector_all(".catalog_item_wrapp"))
+        prev_count = len(page.query_selector_all(".catalog_item_wrapp"))
         btn = page.query_selector(".ajax_load_btn")
         if not btn or not btn.is_visible():
+            # Ждём до 5 сек — кнопка может временно исчезать
             appeared = False
             for _ in range(10):
-                import time as _t; _t.sleep(0.5)
+                time.sleep(0.5)
                 btn = page.query_selector(".ajax_load_btn")
                 if btn and btn.is_visible():
                     appeared = True
@@ -41,25 +44,16 @@ def _click_show_more(page):
             if not appeared:
                 break
         page.evaluate("document.querySelector('.ajax_load_btn').click()")
+        click_count += 1
         for _ in range(30):
-            import time as _t; _t.sleep(0.5)
-            if len(page.query_selector_all(".catalog_item_wrapp")) > prev:
+            time.sleep(0.5)
+            if len(page.query_selector_all(".catalog_item_wrapp")) > prev_count:
                 break
         _hide_popup(page)
+    return click_count
 
 
-def _get_pagination_urls(page) -> list:
-    soup = BeautifulSoup(page.content(), "html.parser")
-    seen, urls = set(), []
-    for a in soup.select(".module-pagination .nums a.dark_link"):
-        href = a.get("href", "")
-        if href and href not in seen:
-            seen.add(href)
-            urls.append(BASE_URL + href if href.startswith("/") else href)
-    return urls
-
-
-def _collect_links(page, seen: set, links: list):
+def _collect_links_from_page(page, seen: set, links: list):
     soup = BeautifulSoup(page.content(), "html.parser")
     for item in soup.select(".catalog_item_wrapp .item-title a"):
         href = item.get("href", "")
@@ -69,6 +63,19 @@ def _collect_links(page, seen: set, links: list):
             links.append((item.get_text(strip=True), full_url))
 
 
+def _get_pagination_urls(page) -> list[str]:
+    """Возвращает URL всех страниц пагинации кроме текущей."""
+    soup = BeautifulSoup(page.content(), "html.parser")
+    urls = []
+    seen = set()
+    for a in soup.select(".module-pagination .nums a.dark_link"):
+        href = a.get("href", "")
+        if href and href not in seen:
+            seen.add(href)
+            urls.append(BASE_URL + href if href.startswith("/") else href)
+    return urls
+
+
 def get_product_links(page):
     print(f"Загружаю каталог: {CATALOG_URL}")
     page.goto(CATALOG_URL, wait_until="networkidle", timeout=60000)
@@ -76,15 +83,18 @@ def get_product_links(page):
         page.wait_for_selector(".catalog_item_wrapp", timeout=15000)
     except Exception:
         pass
-
     _hide_popup(page)
 
     links = []
     seen = set()
-    _click_show_more(page)
-    pagination_urls = _get_pagination_urls(page)
-    _collect_links(page, seen, links)
 
+    # Страница 1 — кликаем "Показать ещё" и собираем ссылки
+    clicks = _click_show_more(page)
+    print(f"  Стр.1: кликов={clicks}, товаров={len(page.query_selector_all('.catalog_item_wrapp'))}")
+    pagination_urls = _get_pagination_urls(page)
+    _collect_links_from_page(page, seen, links)
+
+    # Остальные страницы пагинации
     for pg_url in pagination_urls:
         print(f"  Страница пагинации: {pg_url}")
         page.goto(pg_url, wait_until="networkidle", timeout=60000)
@@ -93,15 +103,15 @@ def get_product_links(page):
         except Exception:
             pass
         _hide_popup(page)
-        _click_show_more(page)
-        _collect_links(page, seen, links)
+        clicks = _click_show_more(page)
+        print(f"    кликов={clicks}, товаров={len(page.query_selector_all('.catalog_item_wrapp'))}")
+        _collect_links_from_page(page, seen, links)
 
-    print(f"Найдено товаров: {len(links)}")
+    print(f"Найдено товаров всего: {len(links)}")
     return links
 
 
 def get_images(html: str) -> tuple[str, str]:
-    """Возвращает (основные_через_запятую, дополнительные_через_запятую)."""
     soup = BeautifulSoup(html, "html.parser")
     main_imgs = []
     extra_imgs = []
@@ -121,7 +131,6 @@ def get_images(html: str) -> tuple[str, str]:
 
 
 def get_table_headers(html: str) -> list:
-    """Возвращает список заголовков со ВСЕХ таблиц flt-table на странице."""
     soup = BeautifulSoup(html, "html.parser")
     tables = soup.find_all("table", class_="flt-table")
     headers = []
@@ -140,7 +149,6 @@ def get_table_headers(html: str) -> list:
 
 
 def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> list:
-    """Парсит строки всех таблиц flt-table, маппит по заголовкам в общий список колонок."""
     soup = BeautifulSoup(html, "html.parser")
     tables = soup.find_all("table", class_="flt-table")
     if not tables:
@@ -150,7 +158,6 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
     rows = []
 
     for table in tables:
-        # Строим маппинг колонок для этой таблицы
         thead = table.find("thead")
         local_cols = []
         if thead:
@@ -160,7 +167,6 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
                 local_cols.append(name)
 
         col_index = {name: i for i, name in enumerate(local_cols)}
-
         tbody = table.find("tbody")
 
         for tr in (tbody or table).find_all("tr", class_="table_row"):
@@ -172,7 +178,6 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
                 if idx < 0 or idx >= len(cells):
                     return ""
                 td = cells[idx]
-
                 nal_cell = td.find("span", class_="nal_cell")
                 if nal_cell:
                     p1 = nal_cell.find("span", class_="p1")
@@ -180,12 +185,10 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
                         return p1.get_text(strip=True)
                     btn = nal_cell.find("button")
                     return btn.get_text(strip=True) if btn else nal_cell.get_text(strip=True)
-
                 price_div = td.find("div", class_="table_price")
                 if price_div:
                     price_val = price_div.get("price", "")
                     return price_val.replace(".", ",") if price_val else ""
-
                 span = td.find("span")
                 return span.get_text(strip=True) if span else td.get_text(strip=True)
 
@@ -200,7 +203,6 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
 
 
 def main():
-    # Кэшируем HTML каждой страницы чтобы не грузить дважды
     page_cache = {}
 
     with sync_playwright() as p:
@@ -213,7 +215,6 @@ def main():
             browser.close()
             return
 
-        # Проход 1: собираем все уникальные заголовки
         print("\n--- Проход 1: сбор заголовков ---")
         all_cols_ordered = []
         seen_cols = set()
@@ -242,11 +243,8 @@ def main():
             time.sleep(0.3)
 
         print(f"\nВсего уникальных колонок: {len(all_cols_ordered)}")
-        print(f"Колонки: {all_cols_ordered}")
-
         browser.close()
 
-    # Проход 2: парсим строки используя кэш
     print("\n--- Проход 2: парсинг данных ---")
     all_rows = []
 
@@ -266,7 +264,6 @@ def main():
         writer.writerows(all_rows)
 
     print(f"Сохранено в: {OUT_FILE}")
-    print("Открывай в Excel — разделитель точка с запятой (;)")
 
 
 if __name__ == "__main__":
