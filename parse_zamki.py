@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 CATALOG_URL = "https://alterv.ru/catalog/zamki_povorotnye/"
 OUT_FILE = "alterv_zamki.csv"
-FIXED_COLS = ["Категория", "URL товара", "Фото основные", "Фото дополнительные"]
+FIXED_COLS = ["Категория", "URL товара", "Фото основные", "Фото дополнительные", "Применение HTML"]
 BASE_URL = "https://alterv.ru"
 
 
@@ -111,6 +111,20 @@ def get_product_links(page):
     return links
 
 
+def get_prim_html(page) -> str:
+    """Кликает таб 'Применение' и возвращает innerHTML блока #prim."""
+    try:
+        tab = page.query_selector("a[href='#prim']")
+        if not tab:
+            return ""
+        page.evaluate("document.querySelector(\"a[href='#prim']\").click()")
+        page.wait_for_selector("#prim.active, #prim.tab-pane_new", timeout=5000)
+        html = page.evaluate("document.getElementById('prim') ? document.getElementById('prim').innerHTML : ''")
+        return html.strip() if html else ""
+    except Exception:
+        return ""
+
+
 def get_images(html: str) -> tuple[str, str]:
     soup = BeautifulSoup(html, "html.parser")
     main_imgs = []
@@ -148,7 +162,7 @@ def get_table_headers(html: str) -> list:
     return headers
 
 
-def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> list:
+def parse_product_rows(html: str, category: str, url: str, all_cols: list, prim_html: str = "") -> list:
     soup = BeautifulSoup(html, "html.parser")
     tables = soup.find_all("table", class_="flt-table")
     if not tables:
@@ -192,7 +206,7 @@ def parse_product_rows(html: str, category: str, url: str, all_cols: list) -> li
                 span = td.find("span")
                 return span.get_text(strip=True) if span else td.get_text(strip=True)
 
-            row = [category, url, main_imgs, extra_imgs]
+            row = [category, url, main_imgs, extra_imgs, prim_html]
             for col_name in all_cols:
                 idx = col_index.get(col_name, -1)
                 row.append(get_cell(idx))
@@ -228,7 +242,8 @@ def main():
                 except Exception:
                     pass
                 html = page.content()
-                page_cache[url] = (title, html)
+                prim_html = get_prim_html(page)
+                page_cache[url] = (title, html, prim_html)
 
                 for h in get_table_headers(html):
                     if h not in seen_cols:
@@ -238,7 +253,7 @@ def main():
 
             except Exception as e:
                 print(f"  ОШИБКА: {e}")
-                page_cache[url] = (title, "")
+                page_cache[url] = (title, "", "")
 
             time.sleep(0.3)
 
@@ -248,10 +263,10 @@ def main():
     print("\n--- Проход 2: парсинг данных ---")
     all_rows = []
 
-    for url, (title, html) in page_cache.items():
+    for url, (title, html, prim_html) in page_cache.items():
         if not html:
             continue
-        rows = parse_product_rows(html, title, url, all_cols_ordered)
+        rows = parse_product_rows(html, title, url, all_cols_ordered, prim_html=prim_html)
         print(f"  {title}: {len(rows)} строк")
         all_rows.extend(rows)
 
