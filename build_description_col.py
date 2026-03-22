@@ -21,6 +21,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_clean",
     "table_screenshots_zamki",
     "table_screenshots_fiksatory",
+    "table_screenshots_zashchelki",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -33,6 +34,7 @@ CSV_FILES = [
     "alterv_rukoyatki.csv",
     "alterv_rychagi.csv",
     "alterv_fiksatory.csv",
+    "alterv_zashchelki.csv",
 ]
 
 

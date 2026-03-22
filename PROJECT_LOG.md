@@ -314,3 +314,25 @@
 **Финальный запуск:**
 - `fetch_prim_html.py`: 195 уникальных URL обработаны, `alterv_fiksatory.csv` обновлён (72 строки с `Применение HTML`)
 - `build_description_col.py`: 164 кода, 581 файл, `alterv_fiksatory.csv` обновлён (73/73 строк с колонкой "Описание")
+
+---
+
+## TASK 19 — Новая категория: защёлки накидные
+
+**Файлы:** `parse_zashchelki.py`, `screenshot_zashchelki.py`, `alterv_zashchelki.csv`
+**URL каталога:** https://alterv.ru/catalog/zashchelki_nakidnye/
+
+**Результат парсинга:** 53 товара, 444 строки, 73 уникальные колонки.
+
+**Скриншоты:** `screenshot_zashchelki.py` — 109 скринов в `table_screenshots_zashchelki/` (папка в `.gitignore`). Все скрины ≤ 299 КБ, нарезка не потребовалась.
+
+**Обновлённые скрипты:**
+- `build_description_col.py` — добавлен `alterv_zashchelki.csv` в `CSV_FILES`, `table_screenshots_zashchelki` в `SCREENSHOT_DIRS`
+- `fetch_prim_html.py` — добавлен `alterv_zashchelki.csv` в `CSV_FILES`
+- `screenshot_missing.py` — добавлена новая папка и маппинг CSV→папка
+- `split_screenshots.py` — добавлена `table_screenshots_zashchelki` в `SCREENSHOT_DIRS`
+- `.gitignore` — добавлена `table_screenshots_zashchelki/`
+
+**Финальный запуск:**
+- `fetch_prim_html.py`: 248 уникальных URL обработаны, `alterv_zashchelki.csv` обновлён (444 строки с `Применение HTML`)
+- `build_description_col.py`: 209 кодов, 680 файлов, `alterv_zashchelki.csv` обновлён (445/445 строк с колонкой "Описание")

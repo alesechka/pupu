@@ -23,6 +23,8 @@ SCREENSHOT_DIRS = [
     "table_screenshots_clean",
     "table_screenshots_no_favorites",
     "table_screenshots_zamki",
+    "table_screenshots_fiksatory",
+    "table_screenshots_zashchelki",
 ]
 
 
