@@ -83,7 +83,6 @@ def get_file_code(filename: str) -> str:
 def build_screenshot_index() -> dict[str, list[Path]]:
     """
     Строит индекс: нормализованный_код -> список Path скринов.
-    Использует prefix-матчинг: файл 'k0518k0519_...' попадёт под код 'k0518'.
     """
     # Сначала собираем все файлы с их полными кодами
     all_files: list[tuple[str, Path]] = []
@@ -113,18 +112,10 @@ def build_screenshot_index() -> dict[str, list[Path]]:
 
 def find_screenshots(code: str, index: dict[str, list[Path]]) -> list[Path]:
     """
-    Ищет скрины для кода с prefix-матчингом.
-    'k0518' найдёт файлы с кодом 'k0518', 'k0518k0519' и т.д.
+    Ищет скрины для кода — точный матч по нормализованному коду.
     """
-    results = []
-    seen_names = set()
-    for file_code, files in index.items():
-        if file_code == code or file_code.startswith(code):
-            for f in files:
-                if f.name not in seen_names:
-                    seen_names.add(f.name)
-                    results.append(f)
-    return sorted(results, key=lambda f: f.name)
+    files = index.get(code, [])
+    return sorted(set(files), key=lambda f: f.name)
 
 
 def get_img_width(path: Path) -> int:
