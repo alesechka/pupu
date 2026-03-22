@@ -293,3 +293,24 @@
 После запуска `fetch_prim_html.py` нужно перезапустить `build_description_col.py` чтобы колонка "Описание" подхватила новый `prim_html`.
 
 **Результат:** все CSV покрыты на 100%, колонка "Описание" содержит img-теги скринов + HTML описания из вкладки "Применение".
+
+---
+
+## TASK 18 — Новая категория: фиксаторы поворотные
+
+**Файлы:** `parse_fiksatory.py`, `screenshot_fiksatory.py`, `alterv_fiksatory.csv`
+**URL каталога:** https://alterv.ru/catalog/fiksatory_povorotnye/
+
+**Результат парсинга:** 16 товаров, 72 строки данных.
+
+**Скриншоты:** `screenshot_fiksatory.py` — 20 скринов в `table_screenshots_fiksatory/` (папка в `.gitignore`). Все скрины ≤ 299 КБ, нарезка не потребовалась.
+
+**Обновлённые скрипты:**
+- `build_description_col.py` — добавлен `alterv_fiksatory.csv` в `CSV_FILES`, `table_screenshots_fiksatory` в `SCREENSHOT_DIRS`
+- `fetch_prim_html.py` — добавлен `alterv_fiksatory.csv` в `CSV_FILES`
+- `screenshot_missing.py` — добавлена новая папка и маппинг CSV→папка
+- `.gitignore` — добавлена `table_screenshots_fiksatory/`
+
+**Финальный запуск:**
+- `fetch_prim_html.py`: 195 уникальных URL обработаны, `alterv_fiksatory.csv` обновлён (72 строки с `Применение HTML`)
+- `build_description_col.py`: 164 кода, 581 файл, `alterv_fiksatory.csv` обновлён (73/73 строк с колонкой "Описание")

@@ -20,6 +20,7 @@ IMG_BASE_URL = "https://promfurnitura.by/image/catalog/prom-furnitura/zamki/"
 SCREENSHOT_DIRS = [
     "table_screenshots_clean",
     "table_screenshots_zamki",
+    "table_screenshots_fiksatory",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -31,6 +32,7 @@ CSV_FILES = [
     "alterv_dempfery.csv",
     "alterv_rukoyatki.csv",
     "alterv_rychagi.csv",
+    "alterv_fiksatory.csv",
 ]
 
 

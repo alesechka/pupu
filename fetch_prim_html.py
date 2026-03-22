@@ -16,6 +16,7 @@ CSV_FILES = [
     "alterv_dempfery.csv",
     "alterv_rukoyatki.csv",
     "alterv_rychagi.csv",
+    "alterv_fiksatory.csv",
 ]
 
 
