@@ -5,8 +5,8 @@
     для каждого скрина товара (включая части _part_N)
   - + innerHTML блока #prim (колонка "Применение HTML")
 
-Матчинг скринов к товару: код из URL (последний сегмент пути, до первого _)
-сравнивается с началом имени файла скрина (без учёта _ в коде).
+Матчинг скринов к товару: по slugify(Категория) — полному названию категории,
+совпадающему с началом имени файла скрина.
 """
 
 import csv
@@ -38,55 +38,29 @@ CSV_FILES = [
 ]
 
 
-def get_product_code(url: str) -> str:
-    """
-    Извлекает код товара из URL и нормализует (убирает _).
-    URL: .../a40101_003_zamki_.../ → 'a40101003'
-    URL: .../a40101_063_a40105_zamki_.../ → 'a40101063a40105'
-    Берём токены пока они содержат цифры (коды), стоп на чисто буквенных (транслит).
-    """
-    parts = [p for p in url.rstrip("/").split("/") if p]
-    if not parts:
-        return ""
-    slug = parts[-1]
-    tokens = slug.split("_")
-    code_tokens = []
-    for t in tokens:
-        if re.search(r'[а-яёА-ЯЁ]', t):
-            break
-        # Стоп если токен чисто буквенный (транслит слова типа 'zamki', 'povorotnye')
-        if t.isalpha():
-            break
-        code_tokens.append(t)
-    return "".join(code_tokens).lower()
+def slugify(text: str) -> str:
+    """Повторяет логику slugify из screenshot_*.py скриптов."""
+    text = text.strip().lower()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s]+", "_", text)
+    return text[:60]
 
 
-def get_file_code(filename: str) -> str:
+def get_file_slug(filename: str) -> str:
     """
-    Извлекает нормализованный код из имени файла скрина.
-    'a40101003_замки_..._table_1.png' → 'a40101003'
-    'a40101063_a40105_замки_..._table_1.png' → 'a40101063a40105'
+    Извлекает slug из имени файла скрина — всё до '_table_N' (и '_part_N').
+    '150_скобы_стяжные_для_регулируемых_защелок_table_1.png' → '150_скобы_стяжные_для_регулируемых_защелок'
     """
     name = Path(filename).stem
     name = re.sub(r'_part_\d+$', '', name)
-    tokens = name.split("_")
-    code_tokens = []
-    for t in tokens:
-        if re.search(r'[а-яёА-ЯЁ]', t):
-            break
-        if t == 'table':
-            break
-        if t.isalpha():
-            break
-        code_tokens.append(t)
-    return "".join(code_tokens).lower()
+    name = re.sub(r'_table_\d+$', '', name)
+    return name
 
 
 def build_screenshot_index() -> dict[str, list[Path]]:
     """
-    Строит индекс: нормализованный_код -> список Path скринов.
+    Строит индекс: slug_категории -> список Path скринов.
     """
-    # Сначала собираем все файлы с их полными кодами
     all_files: list[tuple[str, Path]] = []
 
     for dir_name in SCREENSHOT_DIRS:
@@ -94,29 +68,29 @@ def build_screenshot_index() -> dict[str, list[Path]]:
         if not d.exists():
             continue
         for f in sorted(d.glob("*.png")):
-            code = get_file_code(f.name)
-            if code:
-                all_files.append((code, f))
+            slug = get_file_slug(f.name)
+            if slug:
+                all_files.append((slug, f))
         for sub in sorted(d.iterdir()):
             if sub.is_dir():
                 for f in sorted(sub.glob("*.png")):
-                    code = get_file_code(f.name)
-                    if code:
-                        all_files.append((code, f))
+                    slug = get_file_slug(f.name)
+                    if slug:
+                        all_files.append((slug, f))
 
-    # Строим индекс по полному коду
     index: dict[str, list[Path]] = {}
-    for code, f in all_files:
-        index.setdefault(code, []).append(f)
+    for slug, f in all_files:
+        index.setdefault(slug, []).append(f)
 
     return index
 
 
-def find_screenshots(code: str, index: dict[str, list[Path]]) -> list[Path]:
+def find_screenshots(category: str, index: dict[str, list[Path]]) -> list[Path]:
     """
-    Ищет скрины для кода — точный матч по нормализованному коду.
+    Ищет скрины по slugify(category) — точный матч.
     """
-    files = index.get(code, [])
+    slug = slugify(category)
+    files = index.get(slug, [])
     return sorted(set(files), key=lambda f: f.name)
 
 
@@ -128,9 +102,8 @@ def get_img_width(path: Path) -> int:
         return 766
 
 
-def build_description(url: str, prim_html: str, index: dict[str, list[Path]]) -> str:
-    code = get_product_code(url)
-    screenshots = find_screenshots(code, index)
+def build_description(category: str, prim_html: str, index: dict[str, list[Path]]) -> str:
+    screenshots = find_screenshots(category, index)
 
     html_parts = []
     for f in screenshots:
@@ -157,6 +130,7 @@ def process_csv(csv_path: str, index: dict[str, list[Path]]):
 
     # Определяем индексы нужных колонок
     url_idx = headers.index("URL товара") if "URL товара" in headers else 1
+    cat_idx = headers.index("Категория") if "Категория" in headers else 0
     prim_idx = headers.index("Применение HTML") if "Применение HTML" in headers else -1
 
     # Добавляем колонку если её ещё нет
@@ -173,9 +147,10 @@ def process_csv(csv_path: str, index: dict[str, list[Path]]):
             row.append("")
 
         url = row[url_idx] if url_idx < len(row) else ""
+        category = row[cat_idx] if cat_idx < len(row) else ""
         prim_html = row[prim_idx] if prim_idx >= 0 and prim_idx < len(row) else ""
 
-        desc = build_description(url, prim_html, index)
+        desc = build_description(category, prim_html, index)
         row[desc_idx] = desc
         if desc:
             updated += 1
