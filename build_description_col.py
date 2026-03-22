@@ -60,27 +60,33 @@ def get_file_slug(filename: str) -> str:
 def build_screenshot_index() -> dict[str, list[Path]]:
     """
     Строит индекс: slug_категории -> список Path скринов.
+    Каждый slug берётся только из первой папки в SCREENSHOT_DIRS где он найден —
+    чтобы не дублировать файлы из table_screenshots_clean + table_screenshots + etc.
     """
-    all_files: list[tuple[str, Path]] = []
+    index: dict[str, list[Path]] = {}
 
     for dir_name in SCREENSHOT_DIRS:
         d = Path(dir_name)
         if not d.exists():
             continue
+
+        # Собираем все файлы из этой папки (включая подпапки _part_N)
+        dir_files: dict[str, list[Path]] = {}
         for f in sorted(d.glob("*.png")):
             slug = get_file_slug(f.name)
             if slug:
-                all_files.append((slug, f))
+                dir_files.setdefault(slug, []).append(f)
         for sub in sorted(d.iterdir()):
             if sub.is_dir():
                 for f in sorted(sub.glob("*.png")):
                     slug = get_file_slug(f.name)
                     if slug:
-                        all_files.append((slug, f))
+                        dir_files.setdefault(slug, []).append(f)
 
-    index: dict[str, list[Path]] = {}
-    for slug, f in all_files:
-        index.setdefault(slug, []).append(f)
+        # Добавляем в индекс только те slugи, которых ещё нет
+        for slug, files in dir_files.items():
+            if slug not in index:
+                index[slug] = files
 
     return index
 
