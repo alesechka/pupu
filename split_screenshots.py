@@ -25,6 +25,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_zamki",
     "table_screenshots_fiksatory",
     "table_screenshots_zashchelki",
+    "table_screenshots_smazka",
 ]
 
 

@@ -22,6 +22,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_zamki",
     "table_screenshots_fiksatory",
     "table_screenshots_zashchelki",
+    "table_screenshots_smazka",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -35,7 +36,11 @@ CSV_FILES = [
     "alterv_rychagi.csv",
     "alterv_fiksatory.csv",
     "alterv_zashchelki.csv",
+    "alterv_smazka.csv",
 ]
+
+OPEN_SANS_WRAP_START = '<span style="font-family: \'Open Sans\', sans-serif;">'
+OPEN_SANS_WRAP_END = '</span>'
 
 
 def slugify(text: str) -> str:
@@ -118,7 +123,9 @@ def build_description(category: str, prim_html: str, index: dict[str, list[Path]
         html_parts.append(f'<p><img src="{img_url}" style="width: {width}px;"></p>')
 
     if prim_html:
-        html_parts.append(prim_html)
+        html_parts.append(
+            OPEN_SANS_WRAP_START + prim_html + OPEN_SANS_WRAP_END
+        )
 
     return "".join(html_parts)
 
