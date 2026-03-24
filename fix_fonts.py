@@ -1,6 +1,6 @@
 """
 Заменяет все font-family в колонке "Описание" на 'Open Sans', sans-serif.
-Затрагивает все inline style атрибуты во всех тегах.
+Работает через разбивку style-атрибутов на CSS-свойства — надёжно убирает мусор.
 """
 
 import csv
@@ -22,14 +22,26 @@ CSV_FILES = [
 
 OPEN_SANS = "'Open Sans', sans-serif"
 
+
+def fix_style_attr(style_value: str) -> str:
+    """Fix font-family in a CSS style string by splitting on CSS property boundaries."""
+    props = re.split(r';\s*(?=[\w-]+\s*:)', style_value)
+    result = []
+    for prop in props:
+        prop = prop.strip().rstrip(';')
+        if re.match(r'font-family\s*:', prop):
+            result.append(f'font-family: {OPEN_SANS}')
+        else:
+            result.append(prop)
+    return '; '.join(result)
+
+
 def fix_font_family(html: str) -> str:
-    """Заменяет любой font-family в style атрибутах на Open Sans."""
-    # Заменяем font-family: "..." или font-family: '...' или font-family: word, word
-    return re.sub(
-        r'font-family\s*:\s*[^;"\'>]+',
-        f'font-family: {OPEN_SANS}',
-        html
-    )
+    """Fix font-family in all style attributes."""
+    html = re.sub(r'style="([^"]*)"', lambda m: 'style="' + fix_style_attr(m.group(1)) + '"', html)
+    html = re.sub(r"style='([^']*)'", lambda m: "style='" + fix_style_attr(m.group(1)) + "'", html)
+    return html
+
 
 def process_csv(csv_path: str):
     p = Path(csv_path)
