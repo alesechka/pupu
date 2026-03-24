@@ -36,7 +36,11 @@ def _hide_popup(page):
 
 def get_prim_html(page, url: str) -> str:
     try:
-        page.goto(url, wait_until="networkidle", timeout=60000)
+        page.goto(url, wait_until="commit", timeout=20000)
+        try:
+            page.wait_for_selector("a[href='#prim'], tr.table_row", timeout=8000)
+        except Exception:
+            pass
         _hide_popup(page)
         tab = page.query_selector("a[href='#prim']")
         if not tab:
@@ -121,6 +125,7 @@ def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
+        page.set_default_timeout(20000)
 
         for i, url in enumerate(urls, 1):
             print(f"[{i}/{len(urls)}] {url}")
