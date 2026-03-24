@@ -20,6 +20,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_fiksatory",
     "table_screenshots_zashchelki",
     "table_screenshots_smazka",
+    "table_screenshots_makhoviki",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -35,6 +36,7 @@ CSV_TO_DIR = {
     "alterv_fiksatory.csv": "table_screenshots_fiksatory",
     "alterv_zashchelki.csv": "table_screenshots_zashchelki",
     "alterv_smazka.csv": "table_screenshots_smazka",
+    "alterv_makhoviki.csv": "table_screenshots_makhoviki",
 }
 
 CUT_FROM_COLS = {"наличие", "наличие, шт"}
