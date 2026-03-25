@@ -18,6 +18,7 @@ CSV_FILES = [
     "alterv_zashchelki.csv",
     "alterv_smazka.csv",
     "alterv_makhoviki.csv",
+    "alterv_opory.csv",
 ]
 
 OPEN_SANS = "'Open Sans', sans-serif"
