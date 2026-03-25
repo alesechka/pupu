@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 CATALOG_URL = "https://alterv.ru/catalog/opory/"
 OUT_FILE = "alterv_opory.csv"
-FIXED_COLS = ["Категория", "URL товара", "Путь", "Фото основные", "Фото дополнительные", "Применение HTML"]
+FIXED_COLS = ["Категория", "URL товара", "Бренд", "Путь", "Фото основные", "Фото дополнительные", "Применение HTML"]
 BASE_URL = "https://alterv.ru"
 
 
@@ -100,6 +100,16 @@ def get_product_links(page):
     return links
 
 
+def get_brand(html: str) -> str:
+    """Извлекает название бренда из <p class='manufacturer'>"""
+    soup = BeautifulSoup(html, "html.parser")
+    p = soup.find("p", class_="manufacturer")
+    if not p:
+        return ""
+    a = p.find("a")
+    return a.get_text(strip=True) if a else ""
+
+
 def get_breadcrumbs(html: str) -> str:
     """Извлекает путь из breadcrumbs: 'Главная > Каталог > ... > Название товара'"""
     soup = BeautifulSoup(html, "html.parser")
@@ -174,7 +184,7 @@ def get_table_headers(html: str) -> list:
 
 
 def parse_product_rows(html: str, category: str, url: str, breadcrumb: str,
-                       all_cols: list, prim_html: str = "") -> list:
+                       all_cols: list, prim_html: str = "", brand: str = "") -> list:
     soup = BeautifulSoup(html, "html.parser")
     tables = soup.find_all("table", class_="flt-table")
     if not tables:
@@ -218,7 +228,7 @@ def parse_product_rows(html: str, category: str, url: str, breadcrumb: str,
                 span = td.find("span")
                 return span.get_text(strip=True) if span else td.get_text(strip=True)
 
-            row = [category, url, breadcrumb, main_imgs, extra_imgs, prim_html]
+            row = [category, url, brand, breadcrumb, main_imgs, extra_imgs, prim_html]
             for col_name in all_cols:
                 idx = col_index.get(col_name, -1)
                 row.append(get_cell(idx))
@@ -255,7 +265,8 @@ def main():
                 html = page.content()
                 prim_html = get_prim_html(page)
                 breadcrumb = get_breadcrumbs(html)
-                page_cache[url] = (title, html, prim_html, breadcrumb)
+                brand = get_brand(html)
+                page_cache[url] = (title, html, prim_html, breadcrumb, brand)
                 print(f"  Путь: {breadcrumb}")
 
                 for h in get_table_headers(html):
@@ -266,7 +277,7 @@ def main():
 
             except Exception as e:
                 print(f"  ОШИБКА: {e}")
-                page_cache[url] = (title, "", "", "")
+                page_cache[url] = (title, "", "", "", "")
 
             time.sleep(0.3)
 
@@ -276,10 +287,10 @@ def main():
     print("\n--- Проход 2: парсинг данных ---")
     all_rows = []
 
-    for url, (title, html, prim_html, breadcrumb) in page_cache.items():
+    for url, (title, html, prim_html, breadcrumb, brand) in page_cache.items():
         if not html:
             continue
-        rows = parse_product_rows(html, title, url, breadcrumb, all_cols_ordered, prim_html=prim_html)
+        rows = parse_product_rows(html, title, url, breadcrumb, all_cols_ordered, prim_html=prim_html, brand=brand)
         print(f"  {title}: {len(rows)} строк")
         all_rows.extend(rows)
 
