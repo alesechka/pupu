@@ -30,6 +30,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_opory",
     "table_screenshots_petli",
     "table_screenshots_rukoyatki2",
+    "table_screenshots_ruchki_p",
 ]
 
 
