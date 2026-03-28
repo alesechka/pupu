@@ -16,7 +16,7 @@ import io
 from pathlib import Path
 from PIL import Image
 
-MAX_BYTES = 299 * 1024  # 299 КБ
+MAX_BYTES = 249 * 1024  # 249 КБ
 # Папки со скриншотами для обработки
 SCREENSHOT_DIRS = [
     "table_screenshots",
@@ -32,6 +32,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_rukoyatki2",
     "table_screenshots_ruchki_p",
     "table_screenshots_ruchki_z",
+    "table_screenshots_zazhimy",
 ]
 
 
