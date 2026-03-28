@@ -133,8 +133,10 @@ def build_description(category: str, prim_html: str, index: dict[str, list[Path]
         html_parts.append(f'<p><img src="{img_url}" style="width: {width}px;"></p>')
 
     if prim_html:
+        # Убираем ссылки из prim_html — оставляем только текст
+        prim_clean = re.sub(r'<a[^>]*>(.*?)</a>', r'\1', prim_html, flags=re.DOTALL)
         html_parts.append(
-            OPEN_SANS_WRAP_START + prim_html + OPEN_SANS_WRAP_END
+            OPEN_SANS_WRAP_START + prim_clean + OPEN_SANS_WRAP_END
         )
 
     return "".join(html_parts)
