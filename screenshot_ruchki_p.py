@@ -74,11 +74,12 @@ def _collect_links(page, seen, links):
 
 def _get_pagination_urls(page):
     soup = BeautifulSoup(page.content(), "html.parser")
-    urls, seen = [], set()
-    for a in soup.select(".module-pagination .nums a.dark_link"):
+    seen, urls = [], []
+    for a in soup.select(".module-pagination a, .nums a, [class*='pagination'] a"):
         href = a.get("href", "")
-        if href and href not in seen:
-            seen.add(href); urls.append(BASE_URL + href if href.startswith("/") else href)
+        if href and "PAGEN" in href and href not in seen:
+            seen.append(href)
+            urls.append(BASE_URL + href if href.startswith("/") else href)
     return urls
 
 def get_product_links(page):
@@ -89,12 +90,19 @@ def get_product_links(page):
     _hide_popup(page)
     links, seen = [], set()
     _click_show_more(page)
-    for pg_url in _get_pagination_urls(page):
-        page.goto(pg_url, wait_until="networkidle", timeout=60000)
-        try: page.wait_for_selector(".catalog_item_wrapp", timeout=15000)
-        except: pass
-        _hide_popup(page); _click_show_more(page)
     _collect_links(page, seen, links)
+    page_num = 2
+    while True:
+        pg_url = f"{CATALOG_URL}?PAGEN_2={page_num}"
+        page.goto(pg_url, wait_until="networkidle", timeout=60000)
+        try: page.wait_for_selector(".catalog_item_wrapp", timeout=10000)
+        except: break
+        _hide_popup(page); _click_show_more(page)
+        prev_count = len(links)
+        _collect_links(page, seen, links)
+        print(f"  Стр.{page_num}: новых={len(links)-prev_count}")
+        if len(links) == prev_count: break
+        page_num += 1
     print(f"Товаров: {len(links)}")
     return links
 
