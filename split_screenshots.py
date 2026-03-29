@@ -34,6 +34,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_ruchki_z",
     "table_screenshots_zazhimy",
     "table_screenshots_teleskop",
+    "table_screenshots_fiksatory2",
 ]
 
 
