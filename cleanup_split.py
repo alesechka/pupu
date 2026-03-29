@@ -19,6 +19,7 @@ DIRS = [
     "table_screenshots_ruchki_p",
     "table_screenshots_ruchki_z",
     "table_screenshots_zazhimy",
+    "table_screenshots_teleskop",
 ]
 
 for dir_name in DIRS:
