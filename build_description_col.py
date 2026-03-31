@@ -66,10 +66,28 @@ CSV_FILES = [
 OPEN_SANS_WRAP_START = '<span style="font-family: \'Open Sans\', sans-serif;">'
 OPEN_SANS_WRAP_END = '</span>'
 
+TRANSLIT = {
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z',
+    'и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r',
+    'с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh',
+    'щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya',
+}
+
+def transliterate(text: str) -> str:
+    return ''.join(TRANSLIT.get(c, c) for c in text)
+
 
 def slugify(text: str) -> str:
-    """Повторяет логику slugify из screenshot_*.py скриптов."""
+    """Повторяет логику slugify из screenshot_*.py скриптов (без транслита)."""
     text = text.strip().lower()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s]+", "_", text)
+    return text[:60]
+
+
+def slugify_latin(text: str) -> str:
+    """Slugify с транслитерацией — для новых категорий с латинскими именами файлов."""
+    text = transliterate(text.strip().lower())
     text = re.sub(r"[^\w\s-]", "", text)
     text = re.sub(r"[\s]+", "_", text)
     return text[:60]
@@ -122,10 +140,16 @@ def build_screenshot_index() -> dict[str, list[Path]]:
 
 def find_screenshots(category: str, index: dict[str, list[Path]]) -> list[Path]:
     """
-    Ищет скрины по slugify(category) — точный матч.
+    Ищет скрины по slugify(category) — сначала кириллический slug, потом транслитерированный.
     """
+    # Сначала пробуем кириллический slug (старые категории)
     slug = slugify(category)
     files = index.get(slug, [])
+    if files:
+        return sorted(set(files), key=lambda f: f.name)
+    # Потом транслитерированный (новые категории с латинскими именами)
+    slug_lat = slugify_latin(category)
+    files = index.get(slug_lat, [])
     return sorted(set(files), key=lambda f: f.name)
 
 
