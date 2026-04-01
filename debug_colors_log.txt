@@ -1,0 +1,35 @@
+﻿╙эшъры№э√ї color чэрўхэшщ: 2
+'color: rgb(56, 56, 56)'
+'color: rgb(85, 85, 85)'
+
+┬ёх CSS ётющёЄтр (Єюя 30):
+  font-size: 100392
+  padding: 89624
+  outline: 88796
+  margin: 74250
+  font-family: 46316
+  list-style-type: 39284
+  position: 39284
+  color: 34287
+  width: 17610
+  font-weight: 16335
+  margin-bottom: 15374
+  margin-right: 15362
+  margin-left: 15362
+  line-height: 12454
+  https: 9561
+  ╚ёяюыэхэшх: 7027
+  border-top: 6867
+  border-bottom: 6867
+  background: 6867
+  ╠рЄхЁшры√: 5774
+  padding-top: 3987
+  padding-right: 3987
+  padding-left: 3987
+  vertical-align: 3987
+  border: 3987
+  text-wrap-mode: 3987
+  text-align: 3987
+  яЁшьхэхэш■: 3071
+  ёЄрыш: 2592
+  ╠рЄхЁшры: 1222

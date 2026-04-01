@@ -1,0 +1,15 @@
+﻿╥ютрЁют эр ёЄЁ.1: 20
+  A00060 ╨єўъш сєухы№э√х шч яырёЄшър яЁ ьюєуюы№эюую ёхўхэш  -> /catalog/ruchki_skoby_bugelnye_rukoyatki/a00060_ruchki_bugelnye_iz_plastika_pryamougolnogo_secheniya/
+  A00067 ╨єўъш тЁхчэ√х ўр°хўэ√х шч яырёЄшър ё эрЁєцэ√ь ъЁхяыхэшхь -> /catalog/ruchki_vreznye_nakladnye_otkidnye_rukoyatki/a00067_ruchki_vreznye_chashechnye_iz_plastika_s_naruzhnym_krepleniem/
+  A00130 ╨єўъш яЁюЇшы№э√х шч ры■ьшэш  ЁшЇыхэ√х ЁхуєышЁєхь√х -> /catalog/ruchki_vreznye_nakladnye_otkidnye_rukoyatki/a00130_ruchki_profilnye_iz_alyuminiya_riflenye_reguliruemye/
+  A00131 ╨єўъш яЁюЇшы№э√х шч ры■ьшэш  ЁшЇыхэ√х єуыют√х ЁхуєышЁєхь√х -> /catalog/ruchki_vreznye_nakladnye_otkidnye_rukoyatki/a00131_ruchki_profilnye_iz_alyuminiya_riflenye_uglovye_reguliruemye/
+  A00132 ╨єўъш яЁюЇшы№э√х шч ры■ьшэш  ЁшЇыхэ√х єуыют√х ЁхуєышЁєхь√х -> /catalog/ruchki_vreznye_nakladnye_otkidnye_rukoyatki/a00132_ruchki_profilnye_iz_alyuminiya_riflenye_uglovye_reguliruemye/
+
+┬ёх ёё√ыъш ярушэрЎшш:
+   -> /catalog/ruchki_p_obraznye/?PAGEN_2=2
+  2 -> /catalog/ruchki_p_obraznye/?PAGEN_2=2
+  3 -> /catalog/ruchki_p_obraznye/?PAGEN_2=3
+  7 -> /catalog/ruchki_p_obraznye/?PAGEN_2=7
+
+╩эюяър 'яюърчрЄ№ х∙╕': хёЄ№
+╤ў╕Єўшъ ЄютрЁют: ╩юЁчшэр0

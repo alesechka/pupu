@@ -1,0 +1,8 @@
+﻿Input1: "font-family: 'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px;"
+Input2: 'font-family: &quot;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold;'
+Input3: "font-family: 'Open Sans', sans-serif; font-weight: bold;"
+
+After fix:
+"font-family: 'Open Sans', sans-serif'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px;"
+"font-family: 'Open Sans', sans-serif; font-weight: bold;"
+"font-family: 'Open Sans', sans-serif'Open Sans', sans-serif; font-weight: bold;"

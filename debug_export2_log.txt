@@ -1,0 +1,6 @@
+﻿Context around garbage:
+"font-family: 'Open Sans', sans-serif'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 2"
+
+style= matches with quotes: 24
+style="..." matches: 36
+font-family context: 'font-family: \'Open Sans\', sans-serif\'Open Sans\', sans-serif;Open Sans&quot;, Arial, sans-serif; font-size: 15px;"><li style="outline: none medium; mar'

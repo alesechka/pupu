@@ -1,0 +1,1 @@
+﻿"-serif'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px; color: rgb(56, "

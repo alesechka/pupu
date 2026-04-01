@@ -1,0 +1,24 @@
+﻿╚ёяЁрты ■ font-family т ъюыюэъх ╬яшёрэшх...
+  alterv_zamki.csv: шёяЁртыхэю 624 ёЄЁюъ
+  alterv_all.csv: шёяЁртыхэю 221 ёЄЁюъ
+  alterv_vibroopory.csv: шёяЁртыхэю 223 ёЄЁюъ
+  alterv_dempfery.csv: шёяЁртыхэю 23 ёЄЁюъ
+  alterv_rukoyatki.csv: шёяЁртыхэю 71 ёЄЁюъ
+  alterv_rychagi.csv: шёяЁртыхэю 5228 ёЄЁюъ
+  alterv_fiksatory.csv: шёяЁртыхэю 73 ёЄЁюъ
+  alterv_zashchelki.csv: шёяЁртыхэю 445 ёЄЁюъ
+  alterv_smazka.csv: шёяЁртыхэю 475 ёЄЁюъ
+  alterv_makhoviki.csv: шёяЁртыхэю 729 ёЄЁюъ
+  alterv_opory.csv: шёяЁртыхэю 4485 ёЄЁюъ
+  alterv_petli.csv: шёяЁртыхэю 546 ёЄЁюъ
+  alterv_rukoyatki2.csv: шёяЁртыхэю 549 ёЄЁюъ
+  alterv_ruchki_p.csv: шёяЁртыхэю 1025 ёЄЁюъ
+  alterv_ruchki_z.csv: шёяЁртыхэю 3870 ёЄЁюъ
+  alterv_zazhimy.csv: шёяЁртыхэю 1188 ёЄЁюъ
+  alterv_teleskop.csv: шёяЁртыхэю 118 ёЄЁюъ
+  alterv_fiksatory2.csv: шёяЁртыхэю 8458 ёЄЁюъ
+  alterv_schetchiki.csv: шёяЁртыхэю 395 ёЄЁюъ
+  alterv_sharnirnye.csv: шёяЁртыхэю 484 ёЄЁюъ
+  alterv_magnity.csv: шёяЁртыхэю 305 ёЄЁюъ
+
+├юЄютю.

@@ -1,0 +1,13 @@
+﻿Testing fix_style_attr directly:
+IN:  "font-family: 'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-ser"
+OUT: "font-family: 'Open Sans', sans-serif; font-weight: bold; line-height: 28px"
+
+IN:  'font-family: &quot;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: b'
+OUT: "font-family: 'Open Sans', sans-serif; font-weight: bold"
+
+IN:  "font-family: 'Open Sans', sans-serif; font-weight: bold;"
+OUT: "font-family: 'Open Sans', sans-serif; font-weight: bold"
+
+IN:  "color: rgb(85, 85, 85); font-family: 'Open Sans', sans-serif;Open Sans&quot;, Ar"
+OUT: "color: rgb(85, 85, 85); font-family: 'Open Sans', sans-serif; font-size: 15px"
+

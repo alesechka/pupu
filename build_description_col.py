@@ -140,16 +140,16 @@ def build_screenshot_index() -> dict[str, list[Path]]:
 
 def find_screenshots(category: str, index: dict[str, list[Path]]) -> list[Path]:
     """
-    Ищет скрины по slugify(category) — сначала кириллический slug, потом транслитерированный.
+    Ищет скрины по slug категории.
+    Пробует транслитерированный slug (все файлы теперь латиница),
+    затем кириллический (на случай старых файлов).
     """
-    # Сначала пробуем кириллический slug (старые категории)
-    slug = slugify(category)
-    files = index.get(slug, [])
-    if files:
-        return sorted(set(files), key=lambda f: f.name)
-    # Потом транслитерированный (новые категории с латинскими именами)
     slug_lat = slugify_latin(category)
     files = index.get(slug_lat, [])
+    if files:
+        return sorted(set(files), key=lambda f: f.name)
+    slug = slugify(category)
+    files = index.get(slug, [])
     return sorted(set(files), key=lambda f: f.name)
 
 

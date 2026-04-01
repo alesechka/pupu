@@ -1,0 +1,3 @@
+﻿Input: "font-family: 'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px;"
+After step 1: "font-family: 'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px;"
+After step 2: "font-family: 'Open Sans', sans-serif'Open Sans', sans-serif;Open Sans&quot;, Helvetica, Arial, sans-serif; font-weight: bold; line-height: 28px;"

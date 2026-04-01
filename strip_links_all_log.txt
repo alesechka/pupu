@@ -1,0 +1,4 @@
+﻿alterv_opory.csv: шёяЁртыхэю 4073 ёЄЁюъ
+alterv_petli.csv: шёяЁртыхэю 0 ёЄЁюъ
+alterv_rukoyatki2.csv: шёяЁртыхэю 132 ёЄЁюъ
+alterv_ruchki_p.csv: шёяЁртыхэю 29 ёЄЁюъ

@@ -1,0 +1,11 @@
+﻿table_screenshots_opory: эхўхую єфры Є№
+table_screenshots: эхўхую єфры Є№
+table_screenshots_clean: эхўхую єфры Є№
+table_screenshots_zamki: эхўхую єфры Є№
+table_screenshots_fiksatory: эхўхую єфры Є№
+table_screenshots_zashchelki: эхўхую єфры Є№
+table_screenshots_smazka: эхўхую єфры Є№
+  ╙фры ■: k0258_ьрїютшъш_novo_grip_ё_юЄъшфэющ_тЁр∙р■∙хщё _Ёєўъющ_table_1.png
+table_screenshots_makhoviki: єфрыхэю 1 Їрщыют
+
+├юЄютю.

@@ -1,0 +1,16 @@
+﻿table_screenshots_opory: эхўхую єфры Є№
+table_screenshots: эхўхую єфры Є№
+table_screenshots_clean: эхўхую єфры Є№
+table_screenshots_no_favorites: эхўхую єфры Є№
+table_screenshots_zamki: эхўхую єфры Є№
+table_screenshots_fiksatory: эхўхую єфры Є№
+table_screenshots_zashchelki: эхўхую єфры Є№
+table_screenshots_smazka: эхўхую єфры Є№
+table_screenshots_makhoviki: эхўхую єфры Є№
+table_screenshots_petli: эхўхую єфры Є№
+table_screenshots_rukoyatki2: эхўхую єфры Є№
+table_screenshots_ruchki_p: эхўхую єфры Є№
+table_screenshots_ruchki_z: эхўхую єфры Є№
+table_screenshots_zazhimy: эхўхую єфры Є№
+
+├юЄютю.

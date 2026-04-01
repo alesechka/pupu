@@ -1,0 +1,21 @@
+﻿table_screenshots: яхЁхшьхэютрэю 191 Їрщыют
+table_screenshots_clean: яхЁхшьхэютрэю 152 Їрщыют
+table_screenshots_no_favorites: яхЁхшьхэютрэю 87 Їрщыют
+table_screenshots_zamki: яхЁхшьхэютрэю 133 Їрщыют
+table_screenshots_fiksatory: яхЁхшьхэютрэю 20 Їрщыют
+table_screenshots_zashchelki: яхЁхшьхэютрэю 109 Їрщыют
+table_screenshots_smazka: яхЁхшьхэютрэю 70 Їрщыют
+table_screenshots_makhoviki: яхЁхшьхэютрэю 42 Їрщыют
+table_screenshots_opory: яхЁхшьхэютрэю 119 Їрщыют
+table_screenshots_petli: яхЁхшьхэютрэю 142 Їрщыют
+table_screenshots_rukoyatki2: яхЁхшьхэютрэю 59 Їрщыют
+table_screenshots_ruchki_p: яхЁхшьхэютрэю 146 Їрщыют
+table_screenshots_ruchki_z: яхЁхшьхэютрэю 238 Їрщыют
+table_screenshots_zazhimy: яхЁхшьхэютрэю 198 Їрщыют
+table_screenshots_teleskop: яхЁхшьхэютрэю 20 Їрщыют
+table_screenshots_fiksatory2: яхЁхшьхэютрэю 449 Їрщыют
+table_screenshots_schetchiki: яхЁхшьхэютрэю 11 Їрщыют
+table_screenshots_sharnirnye: яхЁхшьхэютрэю 29 Їрщыют
+table_screenshots_magnity: эхўхую яхЁхшьхэют√трЄ№
+
+┬ёхую яхЁхшьхэютрэю: 2215

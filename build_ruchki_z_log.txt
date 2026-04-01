@@ -1,0 +1,21 @@
+﻿╤ЄЁю■ шэфхъё ёъЁшэют...
+  ═рщфхэю ъюфют: 842, Їрщыют: 1311
+
+╬сэюты ■ CSV...
+  alterv_zamki.csv: юсэютыхэю 624/629 ёЄЁюъ
+  alterv_all.csv: юсэютыхэю 221/226 ёЄЁюъ
+  alterv_vibroopory.csv: юсэютыхэю 223/228 ёЄЁюъ
+  alterv_dempfery.csv: юсэютыхэю 23/28 ёЄЁюъ
+  alterv_rukoyatki.csv: юсэютыхэю 71/76 ёЄЁюъ
+  alterv_rychagi.csv: юсэютыхэю 5228/5233 ёЄЁюъ
+  alterv_fiksatory.csv: юсэютыхэю 73/77 ёЄЁюъ
+  alterv_zashchelki.csv: юсэютыхэю 445/447 ёЄЁюъ
+  alterv_smazka.csv: юсэютыхэю 475/476 ёЄЁюъ
+  alterv_makhoviki.csv: юсэютыхэю 729/729 ёЄЁюъ
+  alterv_opory.csv: юсэютыхэю 4485/4485 ёЄЁюъ
+  alterv_petli.csv: юсэютыхэю 546/546 ёЄЁюъ
+  alterv_rukoyatki2.csv: юсэютыхэю 549/549 ёЄЁюъ
+  alterv_ruchki_p.csv: юсэютыхэю 1025/1025 ёЄЁюъ
+  alterv_ruchki_z.csv: юсэютыхэю 3870/3870 ёЄЁюъ
+
+├юЄютю.

@@ -1,0 +1,21 @@
+﻿table_screenshots_opory: эхўхую єфры Є№
+table_screenshots: эхўхую єфры Є№
+table_screenshots_clean: эхўхую єфры Є№
+table_screenshots_no_favorites: эхўхую єфры Є№
+table_screenshots_zamki: эхўхую єфры Є№
+table_screenshots_fiksatory: эхўхую єфры Є№
+table_screenshots_zashchelki: эхўхую єфры Є№
+table_screenshots_smazka: эхўхую єфры Є№
+table_screenshots_makhoviki: эхўхую єфры Є№
+table_screenshots_petli: эхўхую єфры Є№
+table_screenshots_rukoyatki2: эхўхую єфры Є№
+table_screenshots_ruchki_p: эхўхую єфры Є№
+table_screenshots_ruchki_z: эхўхую єфры Є№
+table_screenshots_zazhimy: эхўхую єфры Є№
+table_screenshots_teleskop: эхўхую єфры Є№
+table_screenshots_fiksatory2: эхўхую єфры Є№
+  ╙фры ■: k0408_ёўхЄўшъш_юсюЁюЄют_ьхїрэшўхёъшх_ЄЁхїчэрўэ√х_table_1.png
+  ╙фры ■: k0409_ёўхЄўшъш_юсюЁюЄют_ьхїрэшўхёъшх_ўхЄ√Ёхїчэрўэ√х_table_1.png
+table_screenshots_schetchiki: єфрыхэю 2 Їрщыют
+
+├юЄютю.
