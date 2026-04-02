@@ -31,6 +31,7 @@ DIRS = [
     "table_screenshots_schetchiki",
     "table_screenshots_sharnirnye",
     "table_screenshots_magnity",
+    "table_screenshots_krepezh",
 ]
 
 

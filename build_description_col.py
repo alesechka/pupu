@@ -35,6 +35,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_schetchiki",
     "table_screenshots_sharnirnye",
     "table_screenshots_magnity",
+    "table_screenshots_krepezh",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -61,6 +62,7 @@ CSV_FILES = [
     "alterv_schetchiki.csv",
     "alterv_sharnirnye.csv",
     "alterv_magnity.csv",
+    "alterv_krepezh.csv",
 ]
 
 OPEN_SANS_WRAP_START = '<span style="font-family: \'Open Sans\', sans-serif;">'
