@@ -7,7 +7,16 @@ from playwright.sync_api import sync_playwright
 BASE_URL = "https://alterv.ru"
 CATALOG_URL = "https://alterv.ru/catalog/zashchitnye_profili/"
 OUT_DIR = "table_screenshots_profili"
-CUT_FROM_COLS = {"наличие", "наличие, шт"}
+CUT_FROM_COLS = {"наличие", "наличие, шт", "цена", "цена, руб.", "цена, руб. с ндс"}
+
+# Колонки которые нужно удалить полностью (по точному совпадению)
+REMOVE_COLS = {
+    "наличие", "наличие, шт", "наличие шт",
+    "цена", "цена, руб.", "цена, руб. с ндс", "цена руб", "цена руб.",
+    "стоимость", "стоимость, руб.", "стоимость руб",
+    "цена, руб. с ндс", "цена с ндс",
+    "заказать",
+}
 
 HTML_TEMPLATE = """<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 body{{margin:0;padding:16px;background:#fff;font-family:Arial,sans-serif;font-size:13px;}}
@@ -49,7 +58,7 @@ def clean_table(table):
     cut_index = None
     for i, th in enumerate(headers):
         span = th.find("span", class_="flt-table__title")
-        col = (span.get_text(strip=True) if span else th.get_text(strip=True)).lower()
+        col = (span.get_text(strip=True) if span else th.get_text(strip=True)).lower().strip()
         if col in CUT_FROM_COLS: cut_index = i; break
     if cut_index is None: return
     for th in headers[cut_index:]: th.decompose()
