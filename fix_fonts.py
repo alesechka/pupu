@@ -31,6 +31,7 @@ CSV_FILES = [
     "alterv_magnity.csv",
     "alterv_krepezh.csv",
     "alterv_truby.csv",
+    "alterv_profili.csv",
 ]
 
 OPEN_SANS = "'Open Sans', sans-serif"

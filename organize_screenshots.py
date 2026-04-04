@@ -33,6 +33,7 @@ DIRS = [
     "table_screenshots_magnity",
     "table_screenshots_krepezh",
     "table_screenshots_truby",
+    "table_screenshots_profili",
 ]
 
 
