@@ -9,6 +9,11 @@ CATALOG_URL = "https://alterv.ru/catalog/zashchitnye_profili/"
 OUT_DIR = "table_screenshots_profili"
 CUT_FROM_COLS = {"наличие", "наличие, шт", "цена", "цена, руб.", "цена, руб. с ндс"}
 
+def col_should_cut(col_text: str) -> bool:
+    """Обрезать начиная с этой колонки если она начинается с 'наличие' или 'цена'."""
+    col = col_text.lower().strip()
+    return col.startswith("наличие") or col.startswith("цена") or col.startswith("стоимость")
+
 # Колонки которые нужно удалить полностью (по точному совпадению)
 REMOVE_COLS = {
     "наличие", "наличие, шт", "наличие шт",
@@ -58,8 +63,8 @@ def clean_table(table):
     cut_index = None
     for i, th in enumerate(headers):
         span = th.find("span", class_="flt-table__title")
-        col = (span.get_text(strip=True) if span else th.get_text(strip=True)).lower().strip()
-        if col in CUT_FROM_COLS: cut_index = i; break
+        col = (span.get_text(strip=True) if span else th.get_text(strip=True))
+        if col_should_cut(col): cut_index = i; break
     if cut_index is None: return
     for th in headers[cut_index:]: th.decompose()
     tbody = table.find("tbody")
