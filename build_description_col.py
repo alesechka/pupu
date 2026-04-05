@@ -69,6 +69,7 @@ CSV_FILES = [
     "alterv_truby.csv",
     "alterv_profili.csv",
     "alterv_transport.csv",
+    "alterv_opory_missing.csv",
 ]
 
 OPEN_SANS_WRAP_START = '<span style="font-family: \'Open Sans\', sans-serif;">'
