@@ -40,6 +40,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_truby",
     "table_screenshots_profili",
     "table_screenshots_transport",
+    "table_screenshots_stanok",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -70,6 +71,7 @@ CSV_FILES = [
     "alterv_truby.csv",
     "alterv_profili.csv",
     "alterv_transport.csv",
+    "alterv_stanok.csv",
     "alterv_opory_missing.csv",
 ]
 
