@@ -43,6 +43,7 @@ SCREENSHOT_DIRS = [
     "table_screenshots_stanok",
     "table_screenshots_shkaly",
     "table_screenshots_upory",
+    "table_screenshots_kolesa",
     "table_screenshots",
     "table_screenshots_no_favorites",
 ]
@@ -76,6 +77,7 @@ CSV_FILES = [
     "alterv_stanok.csv",
     "alterv_shkaly.csv",
     "alterv_upory.csv",
+    "alterv_kolesa.csv",
     "alterv_opory_missing.csv",
 ]
 
