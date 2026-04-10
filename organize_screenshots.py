@@ -36,6 +36,11 @@ DIRS = [
     "table_screenshots_truby",
     "table_screenshots_profili",
     "table_screenshots_transport",
+    "table_screenshots_stanok",
+    "table_screenshots_shkaly",
+    "table_screenshots_upory",
+    "table_screenshots_kolesa",
+    "table_screenshots_komponenty",
 ]
 
 
